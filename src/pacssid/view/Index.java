@@ -311,7 +311,7 @@ public final class Index extends JFrame {
         painel = new JPanel();
         tela.add(painel);
         painel.setBounds(0, 0, d.width, d.height);
-        painel.setBackground(new Color(0, 0, 0));//227, 232, 245
+        painel.setBackground(new Color(227, 232, 245));//227, 232, 245
         painel.setLayout(null);
         painel.setVisible(true);
 
