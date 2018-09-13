@@ -125,10 +125,12 @@ public final class Index extends JFrame {
             case 1:
                 unidades = "H";
                 break;
-                case 2:
-                    unidades = "C";
-                    break;
+            case 2:
+                unidades = "COM";
+                break;
             default:
+                unidades = "GA";
+                break;
         }
         if (textCodigo.getText().equals("") && textNome.getText().equals("")) {
             String id, ano, dia, mes, nomePaciente, sexo, modalidade, datanascimento, datatime, descricao, numeroimagens, numeroacesso;
@@ -184,8 +186,8 @@ public final class Index extends JFrame {
                 case 1:
                     unidades = "H";
                     break;
-                    case 2:
-                    unidades = "C";
+                case 2:
+                    unidades = "COM";
                     break;
                 default:
             }
@@ -240,8 +242,8 @@ public final class Index extends JFrame {
                 case 1:
                     unidades = "H";
                     break;
-                    case 2:
-                    unidades = "C";
+                case 2:
+                    unidades = "COM";
                     break;
                 default:
             }
@@ -290,8 +292,8 @@ public final class Index extends JFrame {
     }
 
     public Index() throws FontFormatException, IOException {
-        super(" AGIPRINT | Sistema de Impressão por Demanda  |  Versão: 8.0");
-       // exec();
+        super(" AGIPRINT | Sistema de Impressão por Demanda  |  Versão: 1.0");
+        // exec();
         Container tela = getContentPane();
         Toolkit tk = Toolkit.getDefaultToolkit();
         Dimension d = tk.getScreenSize();
@@ -301,13 +303,13 @@ public final class Index extends JFrame {
         super.setLayout(null);
         super.setExtendedState(MAXIMIZED_BOTH);
         super.setResizable(true);
-        
+
         ImageIcon imagemTituloJanela = new ImageIcon("src/pacssid/icons/Sem título.png");
         setIconImage(imagemTituloJanela.getImage());
         ImageIcon iconBtnPesquisa = new ImageIcon("src/pacssid/icons/if_system-search_118797.png");
         ImageIcon iconPrint = new ImageIcon("src/pacssid/icons/print.png");
         ImageIcon iconLogo = new ImageIcon("src/pacssid/icons/logo.png");
-        
+
         painel = new JPanel();
         tela.add(painel);
         painel.setBounds(0, 0, d.width, d.height);
@@ -317,14 +319,14 @@ public final class Index extends JFrame {
 
         jplLogo = new JPanel();
         painel.add(jplLogo);
-        jplLogo.setBounds(d.width / (100) * 75, d.height / (100) * 7, d.width / (100) * 9, d.height / (100) * 7);
+        jplLogo.setBounds(d.width / (100) * 77, d.height / (100) * 7, d.width / (100) * 9, d.height / (100) * 7);
         jplLogo.setBackground(new Color(39, 41, 38));
         jplLogo.setLayout(null);
         jplLogo.setVisible(true);
 
         paciente = new JPanel();
         painel.add(paciente);
-        paciente.setBounds(d.width / (100) * 2, d.height / (100) * 6, d.width / (100) * 73, d.height / (100) * 24);
+        paciente.setBounds(d.width / (100) * 2, d.height / (100) * 6, d.width / (100) * 75, d.height / (100) * 24);
         paciente.setBackground(new Color(227, 232, 245)); //0,49,
         paciente.setBorder(BorderFactory.createTitledBorder(null, "INFORMAÇÃO DE PESQUISA", TitledBorder.LEFT, TitledBorder.TOP, new Font("Arial", Font.BOLD, 12), new Color(0, 0, 0)));
         paciente.setLayout(null);
@@ -332,7 +334,7 @@ public final class Index extends JFrame {
 
         info_paciente = new JPanel();
         painel.add(info_paciente);
-        info_paciente.setBounds(d.width / (100) * 76, d.height / (100) * 40, d.width / (100) * 25, d.height / (100) * 24);
+        info_paciente.setBounds(d.width / (100) * 78, d.height / (100) * 40, d.width / (100) * 25, d.height / (100) * 24);
         info_paciente.setBackground(new Color(227, 232, 245));
         info_paciente.setBorder(BorderFactory.createTitledBorder(null, "LOCALIZAÇÃO", TitledBorder.CENTER, TitledBorder.TOP, new Font("Arial", Font.BOLD, 12), new Color(0, 0, 0)));
         info_paciente.setLayout(null);
@@ -470,7 +472,7 @@ public final class Index extends JFrame {
 
         btnImprimir = new JButton("Imprimir", iconPrint);
         painel.add(btnImprimir);
-        btnImprimir.setBounds(d.width / (100) * 76, d.height / (100) * 67, 100, 40);
+        btnImprimir.setBounds(d.width / (100) * 78, d.height / (100) * 67, 100, 40);
         btnImprimir.setFont(new Font("Arial", Font.PLAIN, 14));
         btnImprimir.setToolTipText("Realizar impressão do exame selecionado.");
         btnImprimir.setBorder(javax.swing.BorderFactory.createLineBorder(new Color(0, 0, 0), 1));
@@ -478,39 +480,39 @@ public final class Index extends JFrame {
         btnImprimir.setRolloverEnabled(true);
         btnImprimir.setVisible(true);
         btnImprimir.addActionListener((ActionEvent e) -> {
-            if(comboImpressoras.getSelectedIndex()==0){
+            if (comboImpressoras.getSelectedIndex() == 0) {
                 JOptionPane.showMessageDialog(null, "Nenhuma Impressora foi Selecionada.", "Aviso", JOptionPane.WARNING_MESSAGE, new ImageIcon("src/pacssid/icons/error.png"));
-            }else{
-            linha = tabela.getSelectedRow();
-            if (linha < 0) {
-                JOptionPane.showMessageDialog(null, "Nenhum Exame foi Selecionado.", "Aviso", JOptionPane.WARNING_MESSAGE, new ImageIcon("src/pacssid/icons/error.png"));
             } else {
-                nome = String.valueOf(tabela.getValueAt(linha, 1));
-                codigo = String.valueOf(tabela.getValueAt(linha, 0));
-                dataexame = String.valueOf(tabela.getValueAt(linha, 7));
-                datanasc = String.valueOf(tabela.getValueAt(linha, 2));
-                quantidade = String.valueOf(tabela.getValueAt(linha, 8));
-                acesso = String.valueOf(tabela.getValueAt(linha, 6));
-                procedimento = String.valueOf(tabela.getValueAt(linha, 5));
-                uniSelect = comboUnidades.getSelectedIndex();
-                nomedaImpressora = String.valueOf(comboImpressoras.getSelectedItem());
-                Impressao impressao = new Impressao(nome, acesso, codigo, dataexame, datanasc, quantidade, uniSelect, procedimento, nomedaImpressora);
-                if (acesso.equals("null")) {
-                    impressao.VerCaminhoCodigo(codigo);
-                    try {
-                        impressao.Imprimir();    
-                    } catch (PrinterException ex) {
-                        Logger.getLogger(Index.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                linha = tabela.getSelectedRow();
+                if (linha < 0) {
+                    JOptionPane.showMessageDialog(null, "Nenhum Exame foi Selecionado.", "Aviso", JOptionPane.WARNING_MESSAGE, new ImageIcon("src/pacssid/icons/error.png"));
                 } else {
-                    impressao.VerCaminhoaAcesso(acesso);
-                    try {
-                        impressao.Imprimir();                         
-                    } catch (PrinterException ex) {
-                        Logger.getLogger(Index.class.getName()).log(Level.SEVERE, null, ex);
+                    nome = String.valueOf(tabela.getValueAt(linha, 1));
+                    codigo = String.valueOf(tabela.getValueAt(linha, 0));
+                    dataexame = String.valueOf(tabela.getValueAt(linha, 7));
+                    datanasc = String.valueOf(tabela.getValueAt(linha, 2));
+                    quantidade = String.valueOf(tabela.getValueAt(linha, 8));
+                    acesso = String.valueOf(tabela.getValueAt(linha, 6));
+                    procedimento = String.valueOf(tabela.getValueAt(linha, 5));
+                    uniSelect = comboUnidades.getSelectedIndex();
+                    nomedaImpressora = String.valueOf(comboImpressoras.getSelectedItem());
+                    Impressao impressao = new Impressao(nome, acesso, codigo, dataexame, datanasc, quantidade, uniSelect, procedimento, nomedaImpressora);
+                    if (acesso.equals("null")) {
+                        impressao.VerCaminhoCodigo(codigo);
+                        try {
+                            impressao.Imprimir();
+                        } catch (PrinterException ex) {
+                            Logger.getLogger(Index.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    } else {
+                        impressao.VerCaminhoaAcesso(acesso);
+                        try {
+                            impressao.Imprimir();
+                        } catch (PrinterException ex) {
+                            Logger.getLogger(Index.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     }
                 }
-            }
             }
         });
 
@@ -584,7 +586,7 @@ public final class Index extends JFrame {
         cabecalho.setBackground(new Color(39, 41, 38));//12, 97, 114
         tabela.getTableHeader().setPreferredSize(new Dimension(tabela.getTableHeader().getWidth(), 27));
         cabecalho.setFont(new Font("Arial", Font.BOLD, 12));
-        scroll.setBounds(d.width / (100) * 2, d.height / (100) * 31, d.width / (100) * 73, d.height / (100) * 58);
+        scroll.setBounds(d.width / (100) * 2, d.height / (100) * 31, d.width / (100) * 75, d.height / (100) * 58);
         scroll.setVisible(true);
         tabela.setEnabled(false);
         painel.add(scroll);
@@ -606,19 +608,19 @@ public final class Index extends JFrame {
         tabela.setBackground(Color.white);
         tabela.setSelectionBackground(new Color(205, 197, 191)); // 12, 97, 114
         tabela.setSelectionForeground(new Color(0, 49, 77));
-        tabela.setFont(new Font("Arial", Font.PLAIN, 12));
+        tabela.setFont(new Font("Times", Font.PLAIN, 11));
         tabela.setEnabled(true);
         tabela.setRowHeight(25);
 
-        tabela.getColumnModel().getColumn(0).setPreferredWidth(30);  // CODIGO
-        tabela.getColumnModel().getColumn(1).setPreferredWidth(280); // NOME     
-        tabela.getColumnModel().getColumn(2).setPreferredWidth(50);  // DATA NASC
-        tabela.getColumnModel().getColumn(3).setPreferredWidth(20);  //SEXO
-        tabela.getColumnModel().getColumn(4).setPreferredWidth(20); // MOD   
-        tabela.getColumnModel().getColumn(5).setPreferredWidth(180);  // PROCEDIMENTO 
-        tabela.getColumnModel().getColumn(6).setPreferredWidth(30);  // ACESSO 
-        tabela.getColumnModel().getColumn(7).setPreferredWidth(40);  // DATA
-        tabela.getColumnModel().getColumn(8).setPreferredWidth(10);  // QTD 
+        tabela.getColumnModel().getColumn(0).setPreferredWidth(d.width / (100) * 3);  // CODIGO
+        tabela.getColumnModel().getColumn(1).setPreferredWidth(d.width / (100) * 20); // NOME     
+        tabela.getColumnModel().getColumn(2).setPreferredWidth(d.width / (100) * 6);  // DATA NASC
+        tabela.getColumnModel().getColumn(3).setPreferredWidth(d.width / (100) * 3);  //SEXO
+        tabela.getColumnModel().getColumn(4).setPreferredWidth(d.width / (100) * 3); // MOD   
+        tabela.getColumnModel().getColumn(5).setPreferredWidth(d.width / (100) * 18);  // PROCEDIMENTO 
+        tabela.getColumnModel().getColumn(6).setPreferredWidth(d.width / (100) * 5);  // ACESSO 
+        tabela.getColumnModel().getColumn(7).setPreferredWidth(d.width / (100) * 5);  // DATA
+        tabela.getColumnModel().getColumn(8).setPreferredWidth(d.width / (100) * 3);  // QTD 
 
         tabela.addMouseListener(new MouseAdapter() {
             @Override
@@ -711,20 +713,20 @@ public final class Index extends JFrame {
                 }
             }
         });
-           
+
         TrocarFundo();
 //        exec();
     }
 
     public void exec() {
         try {
-            Process process = Runtime.getRuntime().exec("git pull git://github.com/robertocf/PACSSID.git");
+            Process process = Runtime.getRuntime().exec("git pull https://github.com/robertocf/PACSSID.git");
             Scanner leitor = new Scanner(process.getInputStream());
             while (leitor.hasNextLine()) {
                 System.out.println(leitor.nextLine());
             }
         } catch (IOException e) {
-            
+
         }
     }
 
