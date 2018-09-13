@@ -32,31 +32,40 @@ import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import javax.print.PrintService;
 
 public final class Impressao implements Printable {
 
+    private PrinterJob pjob = null;
+    static String imp = "";
+    private PrintService impressora;
+
     public String a, nome, nomequevemdaclasse, codigoquevemdaclasse,
             dataquevemdaclasse, datanascquevemdaclasse, numeroAcesso, quantidadequevemdaclasse,
-            procedimentoquevemdaclasse, impressora;
+            procedimentoquevemdaclasse;
     public int qtd, nomeArquivo, i = 0, uniSelect, novovalor;
     public Boolean Sr;
-  
-    public void Imprime(Book bk) throws PrinterException {
 
+    public void Imprime(Book bk) throws PrinterException {
         PrinterJob job = PrinterJob.getPrinterJob();
-        job.setPageable(bk);
-        job.setJobName("Impressão da Classe");
-        boolean ok = job.printDialog();
-        if (ok) {
-            try {
-                BarraProgresso barra = new BarraProgresso();
-                job.print();
-                barra.setVisible(true);
-                DeletaArquivos();
-            } catch (PrinterException ex) {
+
+        PrintService[] pservices = PrinterJob.lookupPrintServices();
+        if (pservices.length > 0) {
+            for (PrintService ps : pservices) {
+                if (ps.getName().contains(imp)) {
+                    impressora = ps;
+                    if (impressora != null) {
+                        pjob = PrinterJob.getPrinterJob();
+                        pjob.setPrintService(impressora);
+                        pjob.setPageable(bk);
+                    }
+                    BarraProgresso barra = new BarraProgresso();
+                    pjob.print();
+                    barra.setVisible(true);
+                    DeletaArquivos();
+                    break;
+                }
             }
-        } else {
-            DeletaArquivos();
         }
     }
 
@@ -156,19 +165,21 @@ public final class Impressao implements Printable {
     public static double fatorConverMMPt = 2.834646D;
 
     public Impressao(String nome, String acesso, String codigo, String dataexame, String datanasc, String quantidade, int indice, String procedimento, String nomedaImpressora) {
+
         nomequevemdaclasse = nome;
         codigoquevemdaclasse = codigo;
         dataquevemdaclasse = dataexame;
         datanascquevemdaclasse = datanasc;
         quantidadequevemdaclasse = quantidade;
         procedimentoquevemdaclasse = procedimento;
-        nomedaImpressora = impressora;
+        imp = nomedaImpressora;
         numeroAcesso = acesso;
 
         qtd = Integer.parseInt(quantidadequevemdaclasse);
         uniSelect = indice;
         //TemSR(codigo);
         TemSRAcesso(acesso);
+
     }
 
     @Override
@@ -239,7 +250,7 @@ public final class Impressao implements Printable {
                     bk.append(new pagina18(), pf, 1);
                     break;
             }
-                      Imprime(bk);
+            Imprime(bk);
         } else if (qtd > 18 && qtd <= 24) {
             bk.append(new paginaPrincipal(), job.defaultPage(), 0);
             bk.append(new pagina12(), pf, 1);
@@ -264,7 +275,7 @@ public final class Impressao implements Printable {
                     bk.append(new pagina24(), pf, 1);
                     break;
             }
-                      Imprime(bk);
+            Imprime(bk);
         } else if (qtd > 24 && qtd <= 30) {
             bk.append(new paginaPrincipal(), job.defaultPage(), 0);
             bk.append(new pagina12(), pf, 1);
@@ -453,7 +464,11 @@ public final class Impressao implements Printable {
                     g.drawString("Nome:", 180, 76);
                     g.drawString(nomequevemdaclasse, 220, 76);
                     g.drawString("Descrição:", 180, 94);
-                    g.drawString(procedimentoquevemdaclasse, 250, 94);
+                    if (procedimentoquevemdaclasse.equals("null")) {
+                        procedimentoquevemdaclasse = " ";                        
+                    }else{
+                       g.drawString(procedimentoquevemdaclasse, 250, 94);
+                    }
                     g.setFont(new Font("SansSerif", Font.BOLD, 10));
                     g.drawString("Av. das Flores, 553 - Jd. Cuiabá - Cuiabá-MT - Fone: 4009-8001", 156, 820);
                     // Fim Rodapé
@@ -477,7 +492,11 @@ public final class Impressao implements Printable {
                     g.drawString("Nome:", 180, 76);
                     g.drawString(nomequevemdaclasse, 220, 76);
                     g.drawString("Descrição:", 180, 94);
-                    g.drawString(procedimentoquevemdaclasse, 250, 94);
+                     if (procedimentoquevemdaclasse.equals("null")) {
+                        procedimentoquevemdaclasse = " ";                        
+                    }else{
+                       g.drawString(procedimentoquevemdaclasse, 250, 94);
+                    }
                     g.setFont(new Font("SansSerif", Font.BOLD, 10));
                     g.drawString("Av. das Flores, 843, Térreo - Jd. Cuiabá - Cuiabá-MT - Fone: 4009-8001", 156, 820);
                     // Fim Rodapé
@@ -501,7 +520,11 @@ public final class Impressao implements Printable {
                     g.drawString("Nome:", 180, 76);
                     g.drawString(nomequevemdaclasse, 220, 76);
                     g.drawString("Descrição:", 180, 94);
-                    g.drawString(procedimentoquevemdaclasse, 250, 94);
+                     if (procedimentoquevemdaclasse.equals("null")) {
+                        procedimentoquevemdaclasse = " ";                        
+                    }else{
+                       g.drawString(procedimentoquevemdaclasse, 250, 94);
+                    }
                     g.setFont(new Font("SansSerif", Font.BOLD, 10));
                     g.drawString("R. Cmte. Costa, 1494 - Centro Sul - Cuiabá-MT - Fone: 2136-5154", 156, 820);
                     // Fim Rodapé
@@ -525,7 +548,11 @@ public final class Impressao implements Printable {
                     g.drawString("Nome:", 180, 76);
                     g.drawString(nomequevemdaclasse, 220, 76);
                     g.drawString("Descrição:", 180, 94);
-                    g.drawString(procedimentoquevemdaclasse, 250, 94);
+                     if (procedimentoquevemdaclasse.equals("null")) {
+                        procedimentoquevemdaclasse = " ";                        
+                    }else{
+                       g.drawString(procedimentoquevemdaclasse, 250, 94);
+                    }
                     g.setFont(new Font("SansSerif", Font.BOLD, 10));
                     g.drawString("R. das Begônias, 615 - Jd. Cuiabá - Cuiabá-MT - Fone: 2127-4412", 156, 820);
                     // Fim Rodapé
@@ -548,7 +575,11 @@ public final class Impressao implements Printable {
                     g.drawString("Nome:", 180, 76);
                     g.drawString(nomequevemdaclasse, 220, 76);
                     g.drawString("Descrição:", 180, 94);
-                    g.drawString(procedimentoquevemdaclasse, 250, 94);
+                     if (procedimentoquevemdaclasse.equals("null")) {
+                        procedimentoquevemdaclasse = " ";                        
+                    }else{
+                       g.drawString(procedimentoquevemdaclasse, 250, 94);
+                    }
                     g.setFont(new Font("SansSerif", Font.BOLD, 10));
                     g.drawString("Av. das Flores, 553 - Jd. Cuiabá - Cuiabá-MT - Fone: 4009-8001", 156, 820);
                     // Fim Rodapé    
@@ -682,10 +713,7 @@ public final class Impressao implements Printable {
     public void Imprimir() throws PrinterException {
         PrinterJob job = PrinterJob.getPrinterJob();
         job.setPrintable(this);
-        //Book bk = new Book();
-
         job.print();
-        // job.setPageable(bk);
 
     }
 

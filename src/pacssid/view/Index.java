@@ -36,11 +36,11 @@ import javax.swing.table.JTableHeader;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
-import java.awt.image.BufferedImage;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.print.PrinterException;
+import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -72,12 +72,22 @@ public final class Index extends JFrame {
     public String nome, nomes, linhas, codigo, dataexame, datanasc, quantidade,
             acesso, procedimento, impressoras, nomedaImpressora;
     public int linha, linhaTabela, codigoPaciente, indexUnidades;
-    static BufferedImage myJpegImage = null;
+
     public JFormattedTextField jftData1, jftData2;
     public JComboBox<String> comboUnidades, comboImpressoras;
     public int uniSelect, qtd;
     public boolean Sr;
-
+    
+    private static final String path = "C:\\Users\\Roberto Carvalho\\Documents\\NetBeansProjects\\PACSSID\\local\\config.txt";
+    
+    public void criarArquivo() {
+        try {
+            File diretorio = new File("C:\\Users\\Roberto Carvalho\\Documents\\NetBeansProjects\\PACSSID\\local");
+            diretorio.mkdir();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "Erro ao criar o diretorio");
+        }
+    }
     public void getPrinters() {
         PrintService[] impressora = PrintServiceLookup.lookupPrintServices(null, null);
         ArrayList<Impressora> lista = new ArrayList<>();
@@ -500,7 +510,7 @@ public final class Index extends JFrame {
                     if (acesso.equals("null")) {
                         impressao.VerCaminhoCodigo(codigo);
                         try {
-                            impressao.Imprimir();
+                            impressao.Imprimir();                          
                         } catch (PrinterException ex) {
                             Logger.getLogger(Index.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -515,7 +525,6 @@ public final class Index extends JFrame {
                 }
             }
         });
-
         btnImprimir.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseEntered(java.awt.event.MouseEvent evt) {
