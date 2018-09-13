@@ -302,7 +302,7 @@ public final class Index extends JFrame {
     }
 
     public Index() throws FontFormatException, IOException {
-        super(" AGIPRINT | Sistema de Impressão por Demanda  |  Versão: 2.0");
+        super(" AGIPRINT | Sistema de Impressão por Demanda  |  Versão: 1.0");
         // exec();
         Container tela = getContentPane();
         Toolkit tk = Toolkit.getDefaultToolkit();
