@@ -32,7 +32,7 @@ public final class Layout extends JFrame {
     public JLabel img1, img2, img3, img4, img5, img6;
 
     public Layout() {
-        setTitle(" AgiPrint | Sistema de Impressão por Demanda  |  Versão: 1.1");
+        setTitle(" AgiPrint | Sistema de Impressão por Demanda  |  Versão: 1.2");
         Container tela = getContentPane();
         Toolkit tk = Toolkit.getDefaultToolkit();
         Dimension d = tk.getScreenSize();
