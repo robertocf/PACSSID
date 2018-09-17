@@ -42,17 +42,22 @@ import java.awt.event.MouseEvent;
 import java.awt.print.PrinterException;
 import java.io.File;
 import java.io.IOException;
+import java.sql.PreparedStatement;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Scanner;
 import javax.print.PrintService;
 import javax.print.PrintServiceLookup;
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JOptionPane;
+import javax.swing.JRadioButton;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import javax.swing.text.MaskFormatter;
 
 /**
@@ -70,16 +75,16 @@ public final class Index extends JFrame {
             jlbData, jlbComboUnidades, jlImpressora, jlAcesso, jlVersao;
     private JButton btnAcessar, btnImprimir;
     public String nome, nomes, linhas, codigo, dataexame, datanasc, quantidade,
-            acesso, procedimento, impressoras, nomedaImpressora;
+            acesso, procedimento, impressoras, nomedaImpressora, versão = " 1.1";
     public int linha, linhaTabela, codigoPaciente, indexUnidades;
-
+    private JRadioButton lay_1x1, lay_3x2;
     public JFormattedTextField jftData1, jftData2;
     public JComboBox<String> comboUnidades, comboImpressoras;
     public int uniSelect, qtd;
     public boolean Sr;
-    
+
     private static final String path = "C:\\Users\\Roberto Carvalho\\Documents\\NetBeansProjects\\PACSSID\\local\\config.txt";
-    
+
     public void criarArquivo() {
         try {
             File diretorio = new File("C:\\Users\\Roberto Carvalho\\Documents\\NetBeansProjects\\PACSSID\\local");
@@ -88,6 +93,7 @@ public final class Index extends JFrame {
             JOptionPane.showMessageDialog(null, "Erro ao criar o diretorio");
         }
     }
+
     public void getPrinters() {
         PrintService[] impressora = PrintServiceLookup.lookupPrintServices(null, null);
         ArrayList<Impressora> lista = new ArrayList<>();
@@ -99,26 +105,31 @@ public final class Index extends JFrame {
         }
     }
 
-    public void CorNaLinha() {
+    public void Cor() {
         tabela.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
                     int row, int column) {
-                JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, 3);
+                this.setHorizontalAlignment(CENTER);
+                Icon imagem = new ImageIcon("src/pacssid/icons/print.png");
+                JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, 9);
+                Color c = new Color(0, 41, 89);
+                setFont(new Font("Times", Font.PLAIN, 11));
 
-                Object outrosexames = table.getValueAt(row, 3);
-                ImageIcon iconFemale = new ImageIcon("src/pacssid/icons/icon_female.png");
-                ImageIcon iconMale = new ImageIcon("src/pacssid/icons/icon_male.png");
-
-                if (column == 3) {
-                    if (outrosexames.equals("F")) {
-
-                    } else if (outrosexames.equals("M")) {
+                Object comando = table.getValueAt(row, 9);
+                if (column == 9) {
+                    if (comando.equals("I")) {
+                        setText("X");
+                        c = (Color.RED);
+                        setFont(new Font("Serif", Font.BOLD, 15));
 
                     } else {
-
+                        c = (Color.GREEN);
+                        setFont(new Font("Serif", Font.BOLD, 15));
+                        setText("O");
                     }
                 }
+                label.setForeground(c);
                 return label;
             }
         });
@@ -138,22 +149,24 @@ public final class Index extends JFrame {
             case 2:
                 unidades = "COM";
                 break;
-            default:
+            case 3:
                 unidades = "GA";
+            default:
+
                 break;
         }
         if (textCodigo.getText().equals("") && textNome.getText().equals("")) {
-            String id, ano, dia, mes, nomePaciente, sexo, modalidade, datanascimento, datatime, descricao, numeroimagens, numeroacesso;
+            String custom, id, ano, dia, mes, nomePaciente, sexo, modalidade, datanascimento, datatime, descricao, numeroimagens, numeroacesso;
             ConectaBanco banco = new ConectaBanco();
             banco.conexao();
-            String sql = "select p.pat_id,p.pat_name,pat_birthdate,p.pat_sex, sr.modality,s.accession_no ,s.study_desc,to_char(s.study_datetime,'DD/MM/YYYY'),s.num_instances from patient p, study s,series sr where\n"
-                    + "s.patient_fk = p.pk and sr.study_fk = s.pk and sr.institution like '%" + unidades + "%' order by s.study_datetime desc limit 100";
+            String sql = "select p.pat_id,p.pat_name,s.study_custom1 as custom,pat_birthdate,p.pat_sex, sr.modality,s.accession_no ,s.study_desc,to_char(s.study_datetime,'DD/MM/YYYY'),s.num_instances from patient p, study s,series sr where\n"
+                    + "s.patient_fk = p.pk and sr.study_fk = s.pk and sr.institution like '%" + unidades + "%' order by s.study_datetime desc limit 50";
 
             try {
                 Statement stm = banco.conn.createStatement();
                 ResultSet resultado = stm.executeQuery(sql);
                 while (resultado.next()) {
-
+                    custom = resultado.getString("custom");
                     id = resultado.getString("pat_id");
                     nomePaciente = resultado.getString("pat_name");
                     String nomeDividido = nomePaciente;
@@ -177,7 +190,7 @@ public final class Index extends JFrame {
                     }
                     String[] result = nomeDividido.split("\\^");
                     DefaultTableModel val = (DefaultTableModel) tabela.getModel();
-                    val.addRow(new String[]{id, result[0], datanascimento, sexo, modalidade, descricao, numeroacesso, datatime, numeroimagens});
+                    val.addRow(new String[]{id, result[0], datanascimento, sexo, modalidade, descricao, numeroacesso, datatime, numeroimagens, custom});
 
                 }
                 banco.desconecta();
@@ -185,7 +198,7 @@ public final class Index extends JFrame {
                 Logger.getLogger(Index.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else if (!"".equals(textCodigo.getText()) && textNome.getText().equals("")) {
-            String id, ano, dia, mes, nomePaciente, sexo, modalidade, datanascimento, datatime, descricao, numeroimagens, numeroacesso;
+            String custom, id, ano, dia, mes, nomePaciente, sexo, modalidade, datanascimento, datatime, descricao, numeroimagens, numeroacesso;
 
             unidades = String.valueOf(comboUnidades.getSelectedItem());
             indexUnidades = comboUnidades.getSelectedIndex();
@@ -199,17 +212,21 @@ public final class Index extends JFrame {
                 case 2:
                     unidades = "COM";
                     break;
+                case 3:
+                    unidades = "GA";
                 default:
+
             }
             ConectaBanco banco = new ConectaBanco();
             banco.conexao();
-            String sql = "select p.pat_id,p.pat_name,pat_birthdate,p.pat_sex, sr.modality ,s.accession_no,s.study_desc,to_char(s.study_datetime,'DD/MM/YYYY'),s.num_instances from patient p, study s,series sr where"
-                    + " s.patient_fk = p.pk and sr.study_fk = s.pk and p.pat_id='" + textCodigo.getText() + "' and sr.institution like '%" + unidades + "%' order by s.study_datetime desc limit 100";
+            String sql = "select p.pat_id,p.pat_name,s.study_custom1 as custom,pat_birthdate,p.pat_sex, sr.modality ,s.accession_no,s.study_desc,to_char(s.study_datetime,'DD/MM/YYYY'),s.num_instances from patient p, study s,series sr where"
+                    + " s.patient_fk = p.pk and sr.study_fk = s.pk and p.pat_id='" + textCodigo.getText() + "' and sr.institution like '%" + unidades + "%' order by s.study_datetime desc limit 50";
 
             try {
                 Statement stm = banco.conn.createStatement();
                 ResultSet resultado = stm.executeQuery(sql);
                 while (resultado.next()) {
+                    custom = resultado.getString("custom");
                     id = resultado.getString("pat_id");
                     nomePaciente = resultado.getString("pat_name");
                     String nomeDividido = nomePaciente;
@@ -233,7 +250,7 @@ public final class Index extends JFrame {
                     }
                     String[] result = nomeDividido.split("\\^");
                     DefaultTableModel val = (DefaultTableModel) tabela.getModel();
-                    val.addRow(new String[]{id, result[0], datanascimento, sexo, modalidade, descricao, numeroacesso, datatime, numeroimagens});
+                    val.addRow(new String[]{id, result[0], datanascimento, sexo, modalidade, descricao, numeroacesso, datatime, numeroimagens, custom});
 
                 }
 
@@ -242,7 +259,7 @@ public final class Index extends JFrame {
                 Logger.getLogger(Index.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {
-            String id, ano, dia, mes, nomePaciente, sexo, modalidade, datanascimento, datatime, descricao, numeroimagens, numeroacesso;
+            String id, custom, ano, dia, mes, nomePaciente, sexo, modalidade, datanascimento, datatime, descricao, numeroimagens, numeroacesso;
             unidades = String.valueOf(comboUnidades.getSelectedItem());
             indexUnidades = comboUnidades.getSelectedIndex();
             switch (indexUnidades) {
@@ -255,17 +272,21 @@ public final class Index extends JFrame {
                 case 2:
                     unidades = "COM";
                     break;
+                case 3:
+                    unidades = "GA";
                 default:
+
             }
             ConectaBanco banco = new ConectaBanco();
             banco.conexao();
-            String sql = "select p.pat_id,p.pat_name,pat_birthdate,p.pat_sex, sr.modality ,s.accession_no,s.study_desc,to_char(s.study_datetime,'DD/MM/YYYY'),s.num_instances from patient p, study s,series sr where"
-                    + " s.patient_fk = p.pk and sr.study_fk = s.pk and p.pat_name like'" + textNome.getText() + "%' and sr.institution like '%" + unidades + "%' order by s.study_datetime desc limit 100";
+            String sql = "select p.pat_id,s.study_custom1 as custom,p.pat_name,pat_birthdate,p.pat_sex, sr.modality ,s.accession_no,s.study_desc,to_char(s.study_datetime,'DD/MM/YYYY'),s.num_instances from patient p, study s,series sr where"
+                    + " s.patient_fk = p.pk and sr.study_fk = s.pk and p.pat_name like'" + textNome.getText() + "%' and sr.institution like '%" + unidades + "%' order by s.study_datetime desc limit 50";
 
             try {
                 Statement stm = banco.conn.createStatement();
                 ResultSet resultado = stm.executeQuery(sql);
                 while (resultado.next()) {
+                    custom = resultado.getString("custom");
                     id = resultado.getString("pat_id");
                     nomePaciente = resultado.getString("pat_name");
                     String nomeDividido = nomePaciente;
@@ -289,7 +310,7 @@ public final class Index extends JFrame {
                     }
                     String[] result = nomeDividido.split("\\^");
                     DefaultTableModel val = (DefaultTableModel) tabela.getModel();
-                    val.addRow(new String[]{id, result[0], datanascimento, sexo, modalidade, descricao, numeroacesso, datatime, numeroimagens});
+                    val.addRow(new String[]{id, result[0], datanascimento, sexo, modalidade, descricao, numeroacesso, datatime, numeroimagens, custom});
                 }
                 banco.desconecta();
             } catch (SQLException ex) {
@@ -298,12 +319,62 @@ public final class Index extends JFrame {
         }
         tabela.changeSelection(0, 9, false, false);
 
-        CorNaLinha();
+    }
+    
+    
+      public void VerCodigo(String codigo) {
+                ConectaBanco banco = new ConectaBanco();
+                banco.conexao();
+                String pk = "";
+                String sql = "SELECT ST.PK as PK FROM SERIES S,STUDY ST,PATIENT P WHERE ST.PATIENT_FK = P.PK AND S.MODALITY != 'SR' AND S.STUDY_FK = ST.PK AND P.PAT_ID ='" + codigo + "'";
+
+                try {
+                    Statement stm = banco.conn.createStatement();
+                    ResultSet resultado = stm.executeQuery(sql);
+                    if (resultado.next()) {
+                        pk = resultado.getString("PK");
+                        AlteraIconeCodigo(pk);
+                    }
+                    banco.desconecta();
+                } catch (SQLException ex) {
+                    Logger.getLogger(Index.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                
+            }
+    public void AlteraIconeCodigo(String codigo) {
+                ConectaBanco banco = new ConectaBanco();
+                banco.conexao();
+                String sql = "UPDATE STUDY SET STUDY_CUSTOM1 ='I' WHERE PK = '" + codigo + "'";
+                PreparedStatement stm;
+                try {
+                    stm = banco.conn.prepareStatement(sql);
+                    stm.execute();
+                    stm.close();
+
+                } catch (SQLException ex) {
+                    Logger.getLogger(Index.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+            }
+
+    public void AlteraIcone(String acesso) {
+        ConectaBanco banco = new ConectaBanco();
+        banco.conexao();
+        String sql = "UPDATE STUDY SET STUDY_CUSTOM1 ='I' WHERE ACCESSION_NO = '" + acesso + "'";
+        PreparedStatement stm;
+        try {
+            stm = banco.conn.prepareStatement(sql);
+            stm.execute();
+            stm.close();
+
+        } catch (SQLException ex) {
+            Logger.getLogger(Index.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 
     public Index() throws FontFormatException, IOException {
-        super(" AGIPRINT | Sistema de Impressão por Demanda  |  Versão: 1.1");
-        // exec();
+        setTitle(" AgiPrint | Sistema de Impressão por Demanda  |  Versão:" + versão);
         Container tela = getContentPane();
         Toolkit tk = Toolkit.getDefaultToolkit();
         Dimension d = tk.getScreenSize();
@@ -314,11 +385,11 @@ public final class Index extends JFrame {
         super.setExtendedState(MAXIMIZED_BOTH);
         super.setResizable(true);
 
-        ImageIcon imagemTituloJanela = new ImageIcon("src/pacssid/icons/Sem título.png");
+        ImageIcon imagemTituloJanela = new ImageIcon("src/pacssid/icons/favicon.png");
         setIconImage(imagemTituloJanela.getImage());
         ImageIcon iconBtnPesquisa = new ImageIcon("src/pacssid/icons/if_system-search_118797.png");
         ImageIcon iconPrint = new ImageIcon("src/pacssid/icons/print.png");
-        ImageIcon iconLogo = new ImageIcon("src/pacssid/icons/logo.png");
+        ImageIcon iconLogo = new ImageIcon("src/pacssid/icons/agion.png");
 
         painel = new JPanel();
         tela.add(painel);
@@ -327,10 +398,14 @@ public final class Index extends JFrame {
         painel.setLayout(null);
         painel.setVisible(true);
 
+//        JMenuBar menuBar = new JMenuBar();
+//        super.setJMenuBar(menuBar);
+//        JMenu arquivo = new JMenu("Arquivo");
+//        menuBar.add(arquivo);
         jplLogo = new JPanel();
         painel.add(jplLogo);
-        jplLogo.setBounds(d.width / (100) * 77, d.height / (100) * 7, d.width / (100) * 9, d.height / (100) * 7);
-        jplLogo.setBackground(new Color(39, 41, 38));
+        jplLogo.setBounds(d.width / (100) * 77, d.height / (100) * 7, 349, 137);
+        jplLogo.setBackground(new Color(227, 232, 245));// 39, 41, 38
         jplLogo.setLayout(null);
         jplLogo.setVisible(true);
 
@@ -344,7 +419,7 @@ public final class Index extends JFrame {
 
         info_paciente = new JPanel();
         painel.add(info_paciente);
-        info_paciente.setBounds(d.width / (100) * 78, d.height / (100) * 40, d.width / (100) * 25, d.height / (100) * 24);
+        info_paciente.setBounds(d.width / (100) * 78, d.height / (100) * 40, d.width / (100) * 24, d.height / (100) * 24);
         info_paciente.setBackground(new Color(227, 232, 245));
         info_paciente.setBorder(BorderFactory.createTitledBorder(null, "LOCALIZAÇÃO", TitledBorder.CENTER, TitledBorder.TOP, new Font("Arial", Font.BOLD, 12), new Color(0, 0, 0)));
         info_paciente.setLayout(null);
@@ -352,12 +427,12 @@ public final class Index extends JFrame {
 
         jlVersao = new JLabel(iconLogo);
         jplLogo.add(jlVersao);
-        jlVersao.setBounds(d.width / (100) * 1, 1, 96, 56);
+        jlVersao.setBounds(1, 1, 349, 137);
         jlVersao.setVisible(true);
 
         rodape = new JPanel();
         painel.add(rodape);
-        rodape.setBounds(0, d.height / (100) * 98, d.width, d.height / (100) * 3);
+        rodape.setBounds(0, d.height / (100) * 97, d.width, d.height / (100) * 3);
         rodape.setBackground(new Color(227, 232, 245));//141, 186, 47
         rodape.setLayout(null);
         rodape.setVisible(true);
@@ -477,7 +552,7 @@ public final class Index extends JFrame {
         comboUnidades.addItem("COM. COSTA");
         comboUnidades.addItem("GASTRO MT");
         comboUnidades.setVisible(true);
-        comboUnidades.setSelectedIndex(2);
+        comboUnidades.setSelectedIndex(0);
         comboUnidades.setEnabled(true);
 
         btnImprimir = new JButton("Imprimir", iconPrint);
@@ -510,7 +585,8 @@ public final class Index extends JFrame {
                     if (acesso.equals("null")) {
                         impressao.VerCaminhoCodigo(codigo);
                         try {
-                            impressao.Imprimir();                          
+                            impressao.Imprimir();
+                            VerCodigo(codigo);
                         } catch (PrinterException ex) {
                             Logger.getLogger(Index.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -518,6 +594,7 @@ public final class Index extends JFrame {
                         impressao.VerCaminhoaAcesso(acesso);
                         try {
                             impressao.Imprimir();
+                            AlteraIcone(acesso);
                         } catch (PrinterException ex) {
                             Logger.getLogger(Index.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -602,7 +679,7 @@ public final class Index extends JFrame {
         tabela.setModel(new DefaultTableModel(
                 new Object[][]{},
                 new String[]{
-                    "ID", "NOME", "DATA NASC", "SEXO", "MOD", "PROCEDIMENTO", "ACESSO", "DATA", "QTD"
+                    "ID", "NOME", "DATA NASC", "SEXO", "MOD", "PROCEDIMENTO", "ACESSO", "DATA", "QTD", "IMP"
                 }
         ) {
             @Override
@@ -629,7 +706,16 @@ public final class Index extends JFrame {
         tabela.getColumnModel().getColumn(5).setPreferredWidth(d.width / (100) * 18);  // PROCEDIMENTO 
         tabela.getColumnModel().getColumn(6).setPreferredWidth(d.width / (100) * 5);  // ACESSO 
         tabela.getColumnModel().getColumn(7).setPreferredWidth(d.width / (100) * 5);  // DATA
-        tabela.getColumnModel().getColumn(8).setPreferredWidth(d.width / (100) * 3);  // QTD 
+        tabela.getColumnModel().getColumn(8).setPreferredWidth(d.width / (100) * 3);  // QTD                     
+        tabela.getColumnModel().getColumn(9).setPreferredWidth(d.width / (100) * 3);  // IMP 
+
+//        TableCellRenderer tcrSexo = new ImagemSexo();
+//        TableColumn columnSexo = tabela.getColumnModel().getColumn(3);
+//        columnSexo.setCellRenderer(tcrSexo);
+
+        TableCellRenderer tcr = new Imagem();
+        TableColumn column = tabela.getColumnModel().getColumn(9);
+        column.setCellRenderer(tcr);
 
         tabela.addMouseListener(new MouseAdapter() {
             @Override
@@ -643,7 +729,7 @@ public final class Index extends JFrame {
                     } else {
                         linha = tabela.getSelectedRow();
                         codigodeAcesso = (String) tabela.getValueAt(linha, 6);
-                        if (codigodeAcesso == null) {
+                        if ("null".equals(codigodeAcesso)) {
                             codigo = (String) tabela.getValueAt(linha, 0);
                             VerInformacoesCodigo(codigo);
                         } else {
@@ -654,11 +740,14 @@ public final class Index extends JFrame {
                 }
             }
 
+          
+        
+
             public void VerInformacoesCodigo(String codigo) {
                 ConectaBanco banco = new ConectaBanco();
                 banco.conexao();
                 String sql = "SELECT S.INSTITUTION AS ESTACAO,S.STATION_NAME AS UNIDADE,ST.ACCESSION_NO AS ACESSSO FROM SERIES S,STUDY ST, "
-                        + "PATIENT P WHERE ST.PATIENT_FK = P.PK AND S.STUDY_FK = ST.PK AND P.PAT_ID ='" + codigo + "'";
+                        + "PATIENT P WHERE ST.PATIENT_FK = P.PK AND S.MODALITY != 'SR' AND S.STUDY_FK = ST.PK AND P.PAT_ID ='" + codigo + "'";
                 try {
                     Statement stm = banco.conn.createStatement();
                     ResultSet resultado = stm.executeQuery(sql);
@@ -692,7 +781,7 @@ public final class Index extends JFrame {
                 ConectaBanco banco = new ConectaBanco();
                 banco.conexao();
                 String sql = "SELECT S.INSTITUTION AS ESTACAO,S.STATION_NAME AS UNIDADE,ST.ACCESSION_NO AS ACESSSO FROM SERIES S,STUDY ST, "
-                        + "PATIENT P WHERE ST.PATIENT_FK = P.PK AND S.STUDY_FK = ST.PK AND ST.ACCESSION_NO ='" + codigodeAcesso + "'";
+                        + "PATIENT P WHERE ST.PATIENT_FK = P.PK AND S.MODALITY != 'SR' AND S.STUDY_FK = ST.PK AND ST.ACCESSION_NO ='" + codigodeAcesso + "'";
                 try {
                     Statement stm = banco.conn.createStatement();
                     ResultSet resultado = stm.executeQuery(sql);
@@ -722,7 +811,7 @@ public final class Index extends JFrame {
                 }
             }
         });
-
+        Cor();
         TrocarFundo();
 //        exec();
     }
@@ -795,6 +884,87 @@ public final class Index extends JFrame {
         while (tabela.getRowCount() > 0) {
             DefaultTableModel dm = (DefaultTableModel) tabela.getModel();
             dm.getDataVector().removeAllElements();
+        }
+    }
+
+    class Imagem extends JLabel implements TableCellRenderer {
+
+        public Imagem() {
+            setOpaque(true);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table,
+                Object value, boolean isSelected, boolean hasFocus, int row,
+                int column) {
+            this.setHorizontalAlignment(CENTER);
+            Object comando = table.getValueAt(row, 9);
+            Icon imagem = new ImageIcon("src/pacssid/icons/icons_ok.png");
+            Icon ok = new ImageIcon("src/pacssid/icons/icons_temp.png");
+            if (comando == null) {
+                setIcon(ok);
+                setToolTipText("Exame Aguarando Impressão");
+            } else {
+                setIcon(imagem);
+                setToolTipText("Exame Impresso");
+            }
+            return this;
+        }
+
+        @Override
+        public void validate() {
+        }
+
+        @Override
+        public void revalidate() {
+        }
+
+        @Override
+        protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
+        }
+
+        @Override
+        public void firePropertyChange(String propertyName, boolean oldValue, boolean newValue) {
+        }
+    }
+
+    class ImagemSexo extends JLabel implements TableCellRenderer {
+
+        public ImagemSexo() {
+            setOpaque(true);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table,
+                Object value, boolean isSelected, boolean hasFocus, int row,
+                int column) {
+            this.setHorizontalAlignment(CENTER);
+
+            Object comando = table.getValueAt(row, 3);
+            Icon fem = new ImageIcon("src/pacssid/icons/icon_female.png");
+            Icon masc = new ImageIcon("src/pacssid/icons/icon_male.png");
+            if (comando.equals("M")) {
+                setIcon(masc);
+            } else {
+                setIcon(fem);
+            }
+            return this;
+        }
+
+        @Override
+        public void validate() {
+        }
+
+        @Override
+        public void revalidate() {
+        }
+
+        @Override
+        protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
+        }
+
+        @Override
+        public void firePropertyChange(String propertyName, boolean oldValue, boolean newValue) {
         }
     }
 

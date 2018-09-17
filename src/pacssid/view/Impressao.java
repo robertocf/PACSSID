@@ -164,7 +164,8 @@ public final class Impressao implements Printable {
     }
     public static double fatorConverMMPt = 2.834646D;
 
-    public Impressao(String nome, String acesso, String codigo, String dataexame, String datanasc, String quantidade, int indice, String procedimento, String nomedaImpressora) {
+    public Impressao(String nome, String acesso, String codigo, String dataexame, String datanasc, String quantidade,
+            int indice, String procedimento, String nomedaImpressora) {
 
         nomequevemdaclasse = nome;
         codigoquevemdaclasse = codigo;
@@ -179,7 +180,6 @@ public final class Impressao implements Printable {
         uniSelect = indice;
         //TemSR(codigo);
         TemSRAcesso(acesso);
-
     }
 
     @Override
@@ -718,7 +718,6 @@ public final class Impressao implements Printable {
     }
 
     class paginaPrincipal implements Printable {
-
         @Override
         public int print(Graphics g, PageFormat pf, int pageIndex) throws PrinterException {
             Graphics2D g2d = (Graphics2D) g;

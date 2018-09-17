@@ -65,6 +65,7 @@ public class DicomParaJpeg {
                 ImageIO.write(meuJpeg, "jpg", output);
                 output.close();
             } catch (IOException ex) {
+                JOptionPane.showMessageDialog(null, ex);
                 Logger.getLogger(DicomParaJpeg.class.getName()).log(Level.SEVERE, null, ex);
             }
         } catch (FileNotFoundException ex) {
