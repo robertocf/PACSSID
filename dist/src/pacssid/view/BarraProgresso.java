@@ -62,7 +62,7 @@ public class BarraProgresso extends JFrame {
                 t.stop();
             }
         };
-        t = new Timer(30, ac);
+        t = new Timer(10, ac);
         t.start();
 
     }

@@ -40,8 +40,17 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.print.PrinterException;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Files;
+import static java.nio.file.Files.readAllBytes;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.PreparedStatement;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -76,22 +85,38 @@ public final class Index extends JFrame {
     private JButton btnAcessar, btnImprimir;
     public String nome, nomes, linhas, codigo, dataexame, datanasc, quantidade,
             acesso, procedimento, impressoras, nomedaImpressora, versão = " 2.0";
-    public int linha, linhaTabela, codigoPaciente, indexUnidades;
+    public int linha, linhaTabela, codigoPaciente, indexUnidades, teste;
     private JRadioButton lay_1x1, lay_3x2;
     public JFormattedTextField jftData1, jftData2;
     public JComboBox<String> comboUnidades, comboImpressoras;
     public int uniSelect, qtd;
     public boolean Sr;
 
-    private static final String path = "C:\\Users\\Roberto Carvalho\\Documents\\NetBeansProjects\\PACSSID\\local\\config.txt";
-
-    public void criarArquivo() {
+    public int Caminho() {
+        Path caminho = Paths.get("src/local/config.txt");
         try {
-            File diretorio = new File("C:\\Users\\Roberto Carvalho\\Documents\\NetBeansProjects\\PACSSID\\local");
-            diretorio.mkdir();
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "Erro ao criar o diretorio");
+            byte[] texto = Files.readAllBytes(caminho);
+            String leitura = new String(texto);
+            teste = Integer.parseInt(leitura);
+        } catch (IOException | NumberFormatException error) {
+            JOptionPane.showMessageDialog(null, error);
         }
+        return teste;
+    }
+
+    public void salvarTXT() {
+        int  valor = Caminho();
+        String valorConvert = Integer.toString(valor);
+        FileWriter arq;
+        try {
+            arq = new FileWriter("src/local/config.txt");
+            PrintWriter gravarArq = new PrintWriter(arq);           
+            gravarArq.printf(valorConvert);
+            gravarArq.close();
+        } catch (IOException ex) {
+            Logger.getLogger(Index.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 
     public void getPrinters() {
@@ -320,42 +345,42 @@ public final class Index extends JFrame {
         tabela.changeSelection(0, 9, false, false);
 
     }
-    
-    
-      public void VerCodigo(String codigo) {
-                ConectaBanco banco = new ConectaBanco();
-                banco.conexao();
-                String pk = "";
-                String sql = "SELECT ST.PK as PK FROM SERIES S,STUDY ST,PATIENT P WHERE ST.PATIENT_FK = P.PK AND S.MODALITY != 'SR' AND S.STUDY_FK = ST.PK AND P.PAT_ID ='" + codigo + "'";
 
-                try {
-                    Statement stm = banco.conn.createStatement();
-                    ResultSet resultado = stm.executeQuery(sql);
-                    if (resultado.next()) {
-                        pk = resultado.getString("PK");
-                        AlteraIconeCodigo(pk);
-                    }
-                    banco.desconecta();
-                } catch (SQLException ex) {
-                    Logger.getLogger(Index.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                
+    public void VerCodigo(String codigo) {
+        ConectaBanco banco = new ConectaBanco();
+        banco.conexao();
+        String pk = "";
+        String sql = "SELECT ST.PK as PK FROM SERIES S,STUDY ST,PATIENT P WHERE ST.PATIENT_FK = P.PK AND S.MODALITY != 'SR' AND S.STUDY_FK = ST.PK AND P.PAT_ID ='" + codigo + "'";
+
+        try {
+            Statement stm = banco.conn.createStatement();
+            ResultSet resultado = stm.executeQuery(sql);
+            if (resultado.next()) {
+                pk = resultado.getString("PK");
+                AlteraIconeCodigo(pk);
             }
+            banco.desconecta();
+        } catch (SQLException ex) {
+            Logger.getLogger(Index.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
     public void AlteraIconeCodigo(String codigo) {
-                ConectaBanco banco = new ConectaBanco();
-                banco.conexao();
-                String sql = "UPDATE STUDY SET STUDY_CUSTOM1 ='I' WHERE PK = '" + codigo + "'";
-                PreparedStatement stm;
-                try {
-                    stm = banco.conn.prepareStatement(sql);
-                    stm.execute();
-                    stm.close();
+        ConectaBanco banco = new ConectaBanco();
+        banco.conexao();
+        String sql = "UPDATE STUDY SET STUDY_CUSTOM1 ='I' WHERE PK = '" + codigo + "'";
+        PreparedStatement stm;
+        try {
+            stm = banco.conn.prepareStatement(sql);
+            stm.execute();
+            stm.close();
 
-                } catch (SQLException ex) {
-                    Logger.getLogger(Index.class.getName()).log(Level.SEVERE, null, ex);
-                }
+        } catch (SQLException ex) {
+            Logger.getLogger(Index.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
-            }
+    }
 
     public void AlteraIcone(String acesso) {
         ConectaBanco banco = new ConectaBanco();
@@ -388,7 +413,7 @@ public final class Index extends JFrame {
         ImageIcon imagemTituloJanela = new ImageIcon("src/pacssid/icons/favicon.png");
         setIconImage(imagemTituloJanela.getImage());
         ImageIcon iconBtnPesquisa = new ImageIcon("src/pacssid/icons/if_system-search_118797.png");
-        ImageIcon iconPrint = new ImageIcon("src/pacssid/icons/print.png");
+        ImageIcon iconPrint = new ImageIcon("src/pacssid/icons/icons8-impressão-32.png");
         ImageIcon iconLogo = new ImageIcon("src/pacssid/icons/agion.png");
 
         painel = new JPanel();
@@ -397,11 +422,7 @@ public final class Index extends JFrame {
         painel.setBackground(new Color(227, 232, 245));//227, 232, 245
         painel.setLayout(null);
         painel.setVisible(true);
-
-//        JMenuBar menuBar = new JMenuBar();
-//        super.setJMenuBar(menuBar);
-//        JMenu arquivo = new JMenu("Arquivo");
-//        menuBar.add(arquivo);
+                
         jplLogo = new JPanel();
         painel.add(jplLogo);
         jplLogo.setBounds(d.width / (100) * 77, d.height / (100) * 7, 349, 137);
@@ -552,7 +573,7 @@ public final class Index extends JFrame {
         comboUnidades.addItem("COM. COSTA");
         comboUnidades.addItem("GASTRO MT");
         comboUnidades.setVisible(true);
-        comboUnidades.setSelectedIndex(0);
+        comboUnidades.setSelectedIndex(Caminho());
         comboUnidades.setEnabled(true);
 
         btnImprimir = new JButton("Imprimir", iconPrint);
@@ -572,6 +593,7 @@ public final class Index extends JFrame {
                 if (linha < 0) {
                     JOptionPane.showMessageDialog(null, "Nenhum Exame foi Selecionado.", "Aviso", JOptionPane.WARNING_MESSAGE, new ImageIcon("src/pacssid/icons/error.png"));
                 } else {
+
                     nome = String.valueOf(tabela.getValueAt(linha, 1));
                     codigo = String.valueOf(tabela.getValueAt(linha, 0));
                     dataexame = String.valueOf(tabela.getValueAt(linha, 7));
@@ -587,6 +609,7 @@ public final class Index extends JFrame {
                         try {
                             impressao.Imprimir();
                             VerCodigo(codigo);
+                            btnAcessar.doClick();
                         } catch (PrinterException ex) {
                             Logger.getLogger(Index.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -595,6 +618,7 @@ public final class Index extends JFrame {
                         try {
                             impressao.Imprimir();
                             AlteraIcone(acesso);
+                            btnAcessar.doClick();
                         } catch (PrinterException ex) {
                             Logger.getLogger(Index.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -640,7 +664,7 @@ public final class Index extends JFrame {
 
         textEstacao = new JTextField();
         info_paciente.add(textEstacao);
-        textEstacao.setBounds(d.width / (100) * 2, d.height / (100) * 13, 150, 22);
+        textEstacao.setBounds(d.width / (100) * 2, d.height / (100) * 13, 140, 22);
         textEstacao.setFont(new Font("Arial", Font.BOLD, 16));
         textEstacao.setBorder(null);
         textEstacao.setForeground(new Color(0, 0, 0));
@@ -679,7 +703,7 @@ public final class Index extends JFrame {
         tabela.setModel(new DefaultTableModel(
                 new Object[][]{},
                 new String[]{
-                    "ID", "NOME", "DATA NASC", "SEXO", "MOD", "PROCEDIMENTO", "ACESSO", "DATA", "QTD", "IMP"
+                    "ID", "NOME", "DATA NASC", "SEXO", "MOD", "PROCEDIMENTO", "ACESSO", "DATA", "QTD", "ST"
                 }
         ) {
             @Override
@@ -707,12 +731,11 @@ public final class Index extends JFrame {
         tabela.getColumnModel().getColumn(6).setPreferredWidth(d.width / (100) * 5);  // ACESSO 
         tabela.getColumnModel().getColumn(7).setPreferredWidth(d.width / (100) * 5);  // DATA
         tabela.getColumnModel().getColumn(8).setPreferredWidth(d.width / (100) * 3);  // QTD                     
-        tabela.getColumnModel().getColumn(9).setPreferredWidth(d.width / (100) * 3);  // IMP 
+        tabela.getColumnModel().getColumn(9).setPreferredWidth(d.width / (100) * 3);  // ST 
 
 //        TableCellRenderer tcrSexo = new ImagemSexo();
 //        TableColumn columnSexo = tabela.getColumnModel().getColumn(3);
 //        columnSexo.setCellRenderer(tcrSexo);
-
         TableCellRenderer tcr = new Imagem();
         TableColumn column = tabela.getColumnModel().getColumn(9);
         column.setCellRenderer(tcr);
@@ -739,9 +762,6 @@ public final class Index extends JFrame {
                     }
                 }
             }
-
-          
-        
 
             public void VerInformacoesCodigo(String codigo) {
                 ConectaBanco banco = new ConectaBanco();
