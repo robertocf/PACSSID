@@ -84,7 +84,7 @@ public final class Index extends JFrame {
             jlbData, jlbComboUnidades, jlImpressora, jlAcesso, jlVersao;
     private JButton btnAcessar, btnImprimir;
     public String nome, nomes, linhas, codigo, dataexame, datanasc, quantidade,
-            acesso, procedimento, impressoras, nomedaImpressora, versão = " 2.0";
+            acesso, procedimento, impressoras, nomedaImpressora, versão = " 2.1";
     public int linha, linhaTabela, codigoPaciente, indexUnidades, teste;
     private JRadioButton lay_1x1, lay_3x2;
     public JFormattedTextField jftData1, jftData2;
