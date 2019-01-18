@@ -21,7 +21,7 @@ import javax.swing.JOptionPane;
  * @author Roberto Carvalho
  */
 public class ConectaBanco {
-    public String servidor = "ODIN";// Endereço do banco de dados
+    public String servidor = "localhost";// Endereço do banco de dados
     public String banco = "pacsdb";// Nome do banco de dados criado
     public String porta = "5432";// Porta do Banco
     public Statement stm;//responsável por preparar e ralizar pesquisas no banco de dados

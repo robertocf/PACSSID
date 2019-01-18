@@ -40,15 +40,10 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.print.PrinterException;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
-import static java.nio.file.Files.readAllBytes;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.PreparedStatement;
@@ -84,7 +79,7 @@ public final class Index extends JFrame {
             jlbData, jlbComboUnidades, jlImpressora, jlAcesso, jlVersao;
     private JButton btnAcessar, btnImprimir;
     public String nome, nomes, linhas, codigo, dataexame, datanasc, quantidade,
-            acesso, procedimento, impressoras, nomedaImpressora, versão = " 2.1";
+            acesso, procedimento, impressoras, nomedaImpressora,modalidade, versão = " 2.2";
     public int linha, linhaTabela, codigoPaciente, indexUnidades, teste;
     private JRadioButton lay_1x1, lay_3x2;
     public JFormattedTextField jftData1, jftData2;
@@ -181,11 +176,11 @@ public final class Index extends JFrame {
                 break;
         }
         if (textCodigo.getText().equals("") && textNome.getText().equals("")) {
-            String custom, id, ano, dia, mes, nomePaciente, sexo, modalidade, datanascimento, datatime, descricao, numeroimagens, numeroacesso;
+            String custom, id, ano, dia, mes, nomePaciente, sexo,  datanascimento, datatime, descricao, numeroimagens, numeroacesso;
             ConectaBanco banco = new ConectaBanco();
             banco.conexao();
             String sql = "select p.pat_id,p.pat_name,s.study_custom1 as custom,pat_birthdate,p.pat_sex, sr.modality,s.accession_no ,s.study_desc,to_char(s.study_datetime,'DD/MM/YYYY'),s.num_instances from patient p, study s,series sr where\n"
-                    + "s.patient_fk = p.pk and sr.study_fk = s.pk and sr.institution like '%" + unidades + "%' order by s.study_datetime desc limit 50";
+                    + "s.patient_fk = p.pk and sr.study_fk = s.pk and sr.modality != 'SR' and sr.institution like '%" + unidades + "%' order by s.study_datetime desc limit 30";
 
             try {
                 Statement stm = banco.conn.createStatement();
@@ -202,6 +197,7 @@ public final class Index extends JFrame {
                     descricao = resultado.getString("study_desc");
                     datanascimento = resultado.getString("pat_birthdate");
                     numeroacesso = resultado.getString("accession_no");
+                    
                     if (numeroacesso == null) {
                         numeroacesso = "null";
                     }
@@ -225,27 +221,27 @@ public final class Index extends JFrame {
         } else if (!"".equals(textCodigo.getText()) && textNome.getText().equals("")) {
             String custom, id, ano, dia, mes, nomePaciente, sexo, modalidade, datanascimento, datatime, descricao, numeroimagens, numeroacesso;
 
-            unidades = String.valueOf(comboUnidades.getSelectedItem());
+          //  unidades = String.valueOf(comboUnidades.getSelectedItem());
             indexUnidades = comboUnidades.getSelectedIndex();
-            switch (indexUnidades) {
-                case 0:
-                    unidades = "MATRIZ";
-                    break;
-                case 1:
-                    unidades = "H";
-                    break;
-                case 2:
-                    unidades = "COM";
-                    break;
-                case 3:
-                    unidades = "GA";
-                default:
-
-            }
+//            switch (indexUnidades) {
+//                case 0:
+//                    unidades = "MATRIZ";
+//                    break;
+//                case 1:
+//                    unidades = "H";
+//                    break;
+//                case 2:
+//                    unidades = "COM";
+//                    break;
+//                case 3:
+//                    unidades = "GA";
+//                default:
+//
+//            }
             ConectaBanco banco = new ConectaBanco();
             banco.conexao();
             String sql = "select p.pat_id,p.pat_name,s.study_custom1 as custom,pat_birthdate,p.pat_sex, sr.modality ,s.accession_no,s.study_desc,to_char(s.study_datetime,'DD/MM/YYYY'),s.num_instances from patient p, study s,series sr where"
-                    + " s.patient_fk = p.pk and sr.study_fk = s.pk and p.pat_id='" + textCodigo.getText() + "' and sr.institution like '%" + unidades + "%' order by s.study_datetime desc limit 50";
+                    + " s.patient_fk = p.pk and sr.study_fk = s.pk and sr.modality != 'SR' and p.pat_id='" + textCodigo.getText() + "' order by s.study_datetime desc limit 30";
 
             try {
                 Statement stm = banco.conn.createStatement();
@@ -305,7 +301,7 @@ public final class Index extends JFrame {
             ConectaBanco banco = new ConectaBanco();
             banco.conexao();
             String sql = "select p.pat_id,s.study_custom1 as custom,p.pat_name,pat_birthdate,p.pat_sex, sr.modality ,s.accession_no,s.study_desc,to_char(s.study_datetime,'DD/MM/YYYY'),s.num_instances from patient p, study s,series sr where"
-                    + " s.patient_fk = p.pk and sr.study_fk = s.pk and p.pat_name like'" + textNome.getText() + "%' and sr.institution like '%" + unidades + "%' order by s.study_datetime desc limit 50";
+                    + " s.patient_fk = p.pk and sr.study_fk = s.pk and sr.modality != 'SR' and p.pat_name like'" + textNome.getText() + "%' and sr.institution like '%" + unidades + "%' order by s.study_datetime desc limit 30";
 
             try {
                 Statement stm = banco.conn.createStatement();
@@ -419,30 +415,30 @@ public final class Index extends JFrame {
         painel = new JPanel();
         tela.add(painel);
         painel.setBounds(0, 0, d.width, d.height);
-        painel.setBackground(new Color(227, 232, 245));//227, 232, 245
+        painel.setBackground(new Color(70,130,180));//27,121,97
         painel.setLayout(null);
         painel.setVisible(true);
                 
         jplLogo = new JPanel();
         painel.add(jplLogo);
         jplLogo.setBounds(d.width / (100) * 77, d.height / (100) * 7, 349, 137);
-        jplLogo.setBackground(new Color(227, 232, 245));// 39, 41, 38
+        jplLogo.setBackground(new Color(70,130,180));// 39, 41, 38
         jplLogo.setLayout(null);
         jplLogo.setVisible(true);
 
         paciente = new JPanel();
         painel.add(paciente);
         paciente.setBounds(d.width / (100) * 2, d.height / (100) * 6, d.width / (100) * 75, d.height / (100) * 24);
-        paciente.setBackground(new Color(227, 232, 245)); //0,49,
-        paciente.setBorder(BorderFactory.createTitledBorder(null, "INFORMAÇÃO DE PESQUISA", TitledBorder.LEFT, TitledBorder.TOP, new Font("Arial", Font.BOLD, 12), new Color(0, 0, 0)));
+        paciente.setBackground(new Color(70,130,180)); //0,49,
+        paciente.setBorder(BorderFactory.createTitledBorder(null, "INFORMAÇÃO DE PESQUISA", TitledBorder.LEFT, TitledBorder.TOP, new Font("Arial", Font.BOLD, 12), new Color(255,255,255)));
         paciente.setLayout(null);
         paciente.setVisible(true);
 
         info_paciente = new JPanel();
         painel.add(info_paciente);
-        info_paciente.setBounds(d.width / (100) * 78, d.height / (100) * 40, d.width / (100) * 24, d.height / (100) * 24);
-        info_paciente.setBackground(new Color(227, 232, 245));
-        info_paciente.setBorder(BorderFactory.createTitledBorder(null, "LOCALIZAÇÃO", TitledBorder.CENTER, TitledBorder.TOP, new Font("Arial", Font.BOLD, 12), new Color(0, 0, 0)));
+        info_paciente.setBounds(d.width / (100) * 78, d.height / (100) * 40, d.width / (100) * 23, d.height / (100) * 24);
+        info_paciente.setBackground(new Color(70,130,180));
+        info_paciente.setBorder(BorderFactory.createTitledBorder(null, "LOCALIZAÇÃO", TitledBorder.CENTER, TitledBorder.TOP, new Font("Arial", Font.BOLD, 12), new Color(255,255,255)));
         info_paciente.setLayout(null);
         info_paciente.setVisible(true);
 
@@ -454,7 +450,7 @@ public final class Index extends JFrame {
         rodape = new JPanel();
         painel.add(rodape);
         rodape.setBounds(0, d.height / (100) * 97, d.width, d.height / (100) * 3);
-        rodape.setBackground(new Color(227, 232, 245));//141, 186, 47
+        rodape.setBackground(new Color(70,130,180));//141, 186, 47
         rodape.setLayout(null);
         rodape.setVisible(true);
 
@@ -462,14 +458,14 @@ public final class Index extends JFrame {
         rodape.add(jlbCopy);
         jlbCopy.setBounds(d.width / (100) * 40, -2, d.width / (100) * 36, 22);
         jlbCopy.setFont(new Font("Arial", Font.BOLD, 11));
-        jlbCopy.setForeground(new Color(0, 0, 0));
+        jlbCopy.setForeground(new Color(255,255,255));
         jlbCopy.setVisible(true);
 
         jlbCodigo = new JLabel("CÓDIGO:");
         paciente.add(jlbCodigo);
         jlbCodigo.setBounds(d.width / (100) * 2, d.height / (100) * 4, 100, 22);
         jlbCodigo.setFont(new Font("Arial", Font.BOLD, 14));
-        jlbCodigo.setForeground(new Color(0, 0, 0));
+        jlbCodigo.setForeground(new Color(255,255,255));
         jlbCodigo.setVisible(true);
 
         textCodigo = new JTextField();
@@ -483,7 +479,7 @@ public final class Index extends JFrame {
         paciente.add(jlbData);
         jlbData.setBounds(d.width / (100) * 20, d.height / (100) * 4, 100, 22);
         jlbData.setFont(new Font("Arial", Font.BOLD, 14));
-        jlbData.setForeground(new Color(0, 0, 0));
+        jlbData.setForeground(new Color(255,255,255));
         jlbData.setVisible(false);
 
         jftData1 = new JFormattedTextField();
@@ -501,11 +497,11 @@ public final class Index extends JFrame {
         jftData1.setFont(new Font("Arial", Font.PLAIN, 14));
         jftData1.setVisible(false);
 
-        jlbNome = new JLabel("NOME:");
+        jlbNome = new JLabel("PACIENTE:");
         paciente.add(jlbNome);
         jlbNome.setBounds(d.width / (100) * 2, d.height / (100) * 12, 100, 22);
         jlbNome.setFont(new Font("Arial", Font.BOLD, 14));
-        jlbNome.setForeground(new Color(0, 0, 0));
+        jlbNome.setForeground(new Color(255,255,255));
         jlbNome.setVisible(true);
 
         textNome = new JTextField();
@@ -544,14 +540,15 @@ public final class Index extends JFrame {
         jlImpressora = new JLabel("IMPRESSORA:");
         paciente.add(jlImpressora);
         jlImpressora.setBounds(d.width / (100) * 30, d.height / (100) * 4, 100, 22);
-        jlImpressora.setFont(new Font("Arial", Font.BOLD, 14));
-        jlImpressora.setForeground(new Color(0, 0, 0));
+        jlImpressora.setFont(new Font("Times", Font.BOLD, 14));
+        jlImpressora.setForeground(new Color(255,255,255));
         jlImpressora.setVisible(true);
 
         comboImpressoras = new JComboBox();
         paciente.add(comboImpressoras);
         comboImpressoras.setBounds(d.width / (100) * 30, d.height / (100) * 7, 240, 22);
         comboImpressoras.setForeground(new Color(0, 49, 77));
+        comboImpressoras.setFont(new Font("Times", Font.BOLD, 12));
         comboImpressoras.addItem("");
         getPrinters();
         comboImpressoras.setVisible(true);
@@ -559,15 +556,16 @@ public final class Index extends JFrame {
 
         jlbComboUnidades = new JLabel("UNIDADES:");
         paciente.add(jlbComboUnidades);
-        jlbComboUnidades.setBounds(d.width / (100) * 15, d.height / (100) * 4, 100, 22);
-        jlbComboUnidades.setFont(new Font("Arial", Font.BOLD, 14));
-        jlbComboUnidades.setForeground(new Color(0, 0, 0));
+        jlbComboUnidades.setBounds(d.width / (100) * 13, d.height / (100) * 4, 100, 22);
+        jlbComboUnidades.setFont(new Font("Times", Font.BOLD, 12));
+        jlbComboUnidades.setForeground(new Color(255,255,255));
         jlbComboUnidades.setVisible(true);
 
         comboUnidades = new JComboBox();
         paciente.add(comboUnidades);
-        comboUnidades.setBounds(d.width / (100) * 15, d.height / (100) * 7, 170, 22);
+        comboUnidades.setBounds(d.width / (100) * 13, d.height / (100) * 7, 210, 22);
         comboUnidades.setForeground(new Color(0, 49, 77));
+        comboUnidades.setFont(new Font("Times", Font.BOLD, 14));
         comboUnidades.addItem("MATRIZ");
         comboUnidades.addItem("HOSPITAL JD CUIABA");
         comboUnidades.addItem("COM. COSTA");
@@ -586,6 +584,10 @@ public final class Index extends JFrame {
         btnImprimir.setRolloverEnabled(true);
         btnImprimir.setVisible(true);
         btnImprimir.addActionListener((ActionEvent e) -> {
+            modalidade = String.valueOf(tabela.getValueAt(linha, 6));
+            if(modalidade.equals("ES")){
+                
+            }else{            
             if (comboImpressoras.getSelectedIndex() == 0) {
                 JOptionPane.showMessageDialog(null, "Nenhuma Impressora foi Selecionada.", "Aviso", JOptionPane.WARNING_MESSAGE, new ImageIcon("src/pacssid/icons/error.png"));
             } else {
@@ -593,7 +595,6 @@ public final class Index extends JFrame {
                 if (linha < 0) {
                     JOptionPane.showMessageDialog(null, "Nenhum Exame foi Selecionado.", "Aviso", JOptionPane.WARNING_MESSAGE, new ImageIcon("src/pacssid/icons/error.png"));
                 } else {
-
                     nome = String.valueOf(tabela.getValueAt(linha, 1));
                     codigo = String.valueOf(tabela.getValueAt(linha, 0));
                     dataexame = String.valueOf(tabela.getValueAt(linha, 7));
@@ -605,7 +606,7 @@ public final class Index extends JFrame {
                     nomedaImpressora = String.valueOf(comboImpressoras.getSelectedItem());
                     Impressao impressao = new Impressao(nome, acesso, codigo, dataexame, datanasc, quantidade, uniSelect, procedimento, nomedaImpressora);
                     if (acesso.equals("null")) {
-                        impressao.VerCaminhoCodigo(codigo);
+                        impressao.VerCaminhoCodigo(codigo,dataexame);
                         try {
                             impressao.Imprimir();
                             VerCodigo(codigo);
@@ -625,6 +626,7 @@ public final class Index extends JFrame {
                     }
                 }
             }
+            }
         });
         btnImprimir.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
@@ -641,16 +643,16 @@ public final class Index extends JFrame {
         jlbUnidade = new JLabel("UNIDADE:");
         info_paciente.add(jlbUnidade);
         jlbUnidade.setBounds(d.width / (100) * 1, d.height / (100) * 3, 100, 22);
-        jlbUnidade.setForeground(new Color(0, 0, 0));
+        jlbUnidade.setForeground(new Color(255,255,255));
         jlbUnidade.setFont(new Font("Arial", Font.PLAIN, 12));
         jlbUnidade.setVisible(true);
 
         textUnidade = new JTextField();
         info_paciente.add(textUnidade);
-        textUnidade.setBounds(d.width / (100) * 2, d.height / (100) * 6, 280, 22);
+        textUnidade.setBounds(d.width / (100) * 2, d.height / (100) * 6, 270, 22);
         textUnidade.setFont(new Font("Arial", Font.BOLD, 16));
         textUnidade.setBorder(null);
-        textUnidade.setForeground(new Color(0, 0, 0));
+        textUnidade.setForeground(new Color(255,255,255));
         textUnidade.setBackground(null);
         textUnidade.setEditable(false);
         textUnidade.setVisible(true);
@@ -658,7 +660,7 @@ public final class Index extends JFrame {
         jlbEstacao = new JLabel("ESTAÇÃO:");
         info_paciente.add(jlbEstacao);
         jlbEstacao.setBounds(d.width / (100) * 1, d.height / (100) * 10, 150, 22);
-        jlbEstacao.setForeground(new Color(0, 0, 0));
+        jlbEstacao.setForeground(new Color(255,255,255));
         jlbEstacao.setFont(new Font("Arial", Font.PLAIN, 12));
         jlbEstacao.setVisible(true);
 
@@ -667,7 +669,7 @@ public final class Index extends JFrame {
         textEstacao.setBounds(d.width / (100) * 2, d.height / (100) * 13, 140, 22);
         textEstacao.setFont(new Font("Arial", Font.BOLD, 16));
         textEstacao.setBorder(null);
-        textEstacao.setForeground(new Color(0, 0, 0));
+        textEstacao.setForeground(new Color(255,255,255));
         textEstacao.setEditable(false);
         textEstacao.setBackground(null);
         textEstacao.setVisible(true);
@@ -675,16 +677,16 @@ public final class Index extends JFrame {
         jlAcesso = new JLabel("ACESSO:");
         info_paciente.add(jlAcesso);
         jlAcesso.setBounds(d.width / (100) * 1, d.height / (100) * 17, 150, 22);
-        jlAcesso.setForeground(new Color(0, 0, 0));
+        jlAcesso.setForeground(new Color(255,255,255));
         jlAcesso.setFont(new Font("Arial", Font.PLAIN, 12));
         jlAcesso.setVisible(true);
 
         textAcesso = new JTextField();
         info_paciente.add(textAcesso);
-        textAcesso.setBounds(d.width / (100) * 2, d.height / (100) * 20, 280, 22);
+        textAcesso.setBounds(d.width / (100) * 2, d.height / (100) * 20, 270, 22);
         textAcesso.setFont(new Font("Arial", Font.BOLD, 16));
         textAcesso.setBorder(null);
-        textAcesso.setForeground(new Color(0, 0, 0));
+        textAcesso.setForeground(new Color(255,255,255));
         textAcesso.setBackground(null);
         textAcesso.setEditable(false);
         textAcesso.setVisible(true);
@@ -833,7 +835,7 @@ public final class Index extends JFrame {
         });
         Cor();
         TrocarFundo();
-//        exec();
+        exec();
     }
 
     public void exec() {
@@ -911,6 +913,7 @@ public final class Index extends JFrame {
 
         public Imagem() {
             setOpaque(true);
+            
         }
 
         @Override
@@ -918,6 +921,7 @@ public final class Index extends JFrame {
                 Object value, boolean isSelected, boolean hasFocus, int row,
                 int column) {
             this.setHorizontalAlignment(CENTER);
+            this.setBackground(Color.white);
             Object comando = table.getValueAt(row, 9);
             Icon imagem = new ImageIcon("src/pacssid/icons/icons_ok.png");
             Icon ok = new ImageIcon("src/pacssid/icons/icons_temp.png");
@@ -949,24 +953,27 @@ public final class Index extends JFrame {
     }
 
     class ImagemSexo extends JLabel implements TableCellRenderer {
-
         public ImagemSexo() {
-            setOpaque(true);
+            setOpaque(false);
+            
         }
-
         @Override
         public Component getTableCellRendererComponent(JTable table,
                 Object value, boolean isSelected, boolean hasFocus, int row,
                 int column) {
             this.setHorizontalAlignment(CENTER);
-
             Object comando = table.getValueAt(row, 3);
-            Icon fem = new ImageIcon("src/pacssid/icons/icon_female.png");
-            Icon masc = new ImageIcon("src/pacssid/icons/icon_male.png");
+            Icon fem = new ImageIcon("src/pacssid/icons/icons8-feminino-15.png");
+            Icon masc = new ImageIcon("src/pacssid/icons/icons8-masculino-15.png");
+            this.setBackground(Color.white);
+           
             if (comando.equals("M")) {
+                 tabela.setSelectionBackground(new Color(205, 197, 191));
                 setIcon(masc);
+                setToolTipText("Masculino");
             } else {
                 setIcon(fem);
+                setToolTipText("Feminino");
             }
             return this;
         }

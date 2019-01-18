@@ -33,6 +33,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.print.PrintService;
+import javax.swing.JOptionPane;
 
 public final class Impressao implements Printable {
 
@@ -113,7 +114,7 @@ public final class Impressao implements Printable {
         ConectaBanco banco = new ConectaBanco();
         banco.conexao();
         DicomParaJpeg dicom = new DicomParaJpeg();
-        String caminho;
+        String caminho ;
         String sql = "SELECT  FL.FILEPATH AS CAMINHO FROM FILES FL, PATIENT PT, STUDY ST, SERIES SR, INSTANCE INS \n"
                 + "                WHERE   ST.PATIENT_FK = PT.PK AND\n"
                 + "			 SR.STUDY_FK = ST.PK AND\n"
@@ -136,13 +137,13 @@ public final class Impressao implements Printable {
         }
     }
 
-    public void VerCaminhoCodigo(String codigo) {
+    public void VerCaminhoCodigo(String codigo, String dataexame) {
         ConectaBanco banco = new ConectaBanco();
         banco.conexao();
         DicomParaJpeg dicom = new DicomParaJpeg();
-        String caminho;
+        String caminho;       
         String sql = "SELECT  FL.FILEPATH AS CAMINHO FROM FILES FL, PATIENT PT, STUDY ST, SERIES SR, INSTANCE INS \n"
-                + "                WHERE ST.PATIENT_FK = PT.PK AND\n"
+                + "                WHERE ST.PATIENT_FK = PT.PK AND to_char(st.study_datetime,'DD/MM/YYYY') = '" + dataexame + "' AND \n"
                 + "			 SR.STUDY_FK = ST.PK AND\n"
                 + "			 FL.INSTANCE_FK = INS.PK AND\n"
                 + "			 INS.SERIES_FK = SR.PK AND\n"

@@ -32,15 +32,15 @@ public final class Layout extends JFrame {
     public JLabel img1, img2, img3, img4, img5, img6;
 
     public Layout() {
-        setTitle(" AgiPrint | Sistema de Impressão por Demanda  |  Versão: 1.2");
+        setTitle(" AgiPrint | Sistema de Impressão por Demanda  |  Versão: 2.1");
         Container tela = getContentPane();
         Toolkit tk = Toolkit.getDefaultToolkit();
         Dimension d = tk.getScreenSize();
-        super.setSize(d.width, d.height);
+        super.setSize(d.width/(100)*47, d.height);
         super.setLocationRelativeTo(null);
         super.setVisible(true);
         super.setLayout(null);
-        super.setExtendedState(MAXIMIZED_BOTH);
+        //super.setExtendedState(MAXIMIZED_BOTH);
         super.setResizable(true);
         
         painel = new JPanel();
@@ -61,22 +61,22 @@ public final class Layout extends JFrame {
          Dimension d = tk.getScreenSize();
         try {
             BufferedImage bloco1 = ImageIO.read(new File("src/pacssid/temp/1.jpg"));
-            g.drawImage(bloco1, d.width / (100) * 31, d.height/(100)*10,  d.width / (100) * 21, d.height/(100)*30, null);
+            g.drawImage(bloco1, d.width / (100) * 2, d.height/(100)*10,  d.width / (100) * 21, d.height/(100)*30, null);
             
             BufferedImage bloco2 = ImageIO.read(new File("src/pacssid/temp/2.jpg"));
-            g.drawImage(bloco2, d.width / (100) * 53, d.height/(100)*10, d.width / (100) * 21, d.height/(100)*30, null);
+            g.drawImage(bloco2, d.width / (100) * 24, d.height/(100)*10, d.width / (100) * 21, d.height/(100)*30, null);
             
             BufferedImage bloco3 = ImageIO.read(new File("src/pacssid/temp/3.jpg"));
-            g.drawImage(bloco3, d.width / (100) * 31, d.height/(100)*41, d.width / (100) * 21, d.height/(100)*30, null);
+            g.drawImage(bloco3, d.width / (100) * 2, d.height/(100)*41, d.width / (100) * 21, d.height/(100)*30, null);
             
             BufferedImage bloco4 = ImageIO.read(new File("src/pacssid/temp/4.jpg"));
-            g.drawImage(bloco4, d.width / (100) * 53, d.height/(100)*41,d.width / (100) * 21, d.height/(100)*30, null);
+            g.drawImage(bloco4, d.width / (100) * 24, d.height/(100)*41,d.width / (100) * 21, d.height/(100)*30, null);
             
             BufferedImage bloco5 = ImageIO.read(new File("src/pacssid/temp/5.jpg"));
-            g.drawImage(bloco5, d.width / (100) * 31, d.height/(100)*72, d.width / (100) * 21, d.height/(100)*30, null);
+            g.drawImage(bloco5, d.width / (100) * 2, d.height/(100)*72, d.width / (100) * 21, d.height/(100)*30, null);
             
             BufferedImage bloco6 = ImageIO.read(new File("src/pacssid/temp/6.jpg"));
-            g.drawImage(bloco6, d.width / (100) * 53, d.height/(100)*72, d.width / (100) * 21, d.height/(100)*30, null);
+            g.drawImage(bloco6, d.width / (100) * 24, d.height/(100)*72, d.width / (100) * 21, d.height/(100)*30, null);
 
         } catch (IOException ex) {
             Logger.getLogger(Layout.class.getName()).log(Level.SEVERE, null, ex);
