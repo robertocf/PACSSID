@@ -74,7 +74,7 @@ public final class Impressao implements Printable {
         ConectaBanco banco = new ConectaBanco();
         banco.conexao();
         String sql = "select p.pat_id,p.pat_name,pat_birthdate,p.pat_sex, sr.modality ,s.study_desc,to_char(s.study_datetime,'DD/MM/YYYY'),s.num_instances from patient p, study s,series sr where\n"
-                + "s.patient_fk = p.pk and sr.study_fk = s.pk and sr.modality = 'SR' and p.pat_id = '" + codigo + "' order by s.study_datetime desc;";
+                + "s.patient_fk = p.pk and sr.study_fk = s.pk and sr.modality != 'SR' and p.pat_id = '" + codigo + "' order by s.study_datetime desc";
         try {
             Statement stm = banco.conn.createStatement();
             ResultSet resultado = stm.executeQuery(sql);
@@ -95,7 +95,7 @@ public final class Impressao implements Printable {
         ConectaBanco banco = new ConectaBanco();
         banco.conexao();
         String sql = "select p.pat_id,p.pat_name,pat_birthdate,p.pat_sex, sr.modality ,s.study_desc,to_char(s.study_datetime,'DD/MM/YYYY'),s.num_instances from patient p, study s,series sr where\n"
-                + "s.patient_fk = p.pk and sr.study_fk = s.pk and sr.modality = 'SR' and s.accession_no = '" + acesso + "' order by s.study_datetime desc;";
+                + "s.patient_fk = p.pk and sr.study_fk = s.pk and sr.modality != 'SR' and s.accession_no = '" + acesso + "' order by s.study_datetime desc;";
         try {
             Statement stm = banco.conn.createStatement();
             ResultSet resultado = stm.executeQuery(sql);

@@ -79,7 +79,7 @@ public final class Index extends JFrame {
             jlbData, jlbComboUnidades, jlImpressora, jlAcesso, jlVersao;
     private JButton btnAcessar, btnImprimir;
     public String nome, nomes, linhas, codigo, dataexame, datanasc, quantidade,
-            acesso, procedimento, impressoras, nomedaImpressora,modalidade, versão = " 2.2";
+            acesso, procedimento, impressoras, nomedaImpressora,modalidade, versão = " 2.3";
     public int linha, linhaTabela, codigoPaciente, indexUnidades, teste;
     private JRadioButton lay_1x1, lay_3x2;
     public JFormattedTextField jftData1, jftData2;
@@ -342,11 +342,11 @@ public final class Index extends JFrame {
 
     }
 
-    public void VerCodigo(String codigo) {
+    public void VerCodigo(String codigo, String data) {
         ConectaBanco banco = new ConectaBanco();
         banco.conexao();
         String pk = "";
-        String sql = "SELECT ST.PK as PK FROM SERIES S,STUDY ST,PATIENT P WHERE ST.PATIENT_FK = P.PK AND S.MODALITY != 'SR' AND S.STUDY_FK = ST.PK AND P.PAT_ID ='" + codigo + "'";
+        String sql = "SELECT ST.PK as PK FROM SERIES S,STUDY ST,PATIENT P WHERE TO_CHAR(ST.STUDY_DATETIME,'DD/MM/YYYY') = '"+ data +"' ST.PATIENT_FK = P.PK AND S.MODALITY != 'SR' AND S.STUDY_FK = ST.PK AND P.PAT_ID ='" + codigo + "'";
 
         try {
             Statement stm = banco.conn.createStatement();
@@ -415,21 +415,21 @@ public final class Index extends JFrame {
         painel = new JPanel();
         tela.add(painel);
         painel.setBounds(0, 0, d.width, d.height);
-        painel.setBackground(new Color(70,130,180));//27,121,97
+        painel.setBackground(new Color(47,79,79));//27,121,97
         painel.setLayout(null);
         painel.setVisible(true);
                 
         jplLogo = new JPanel();
         painel.add(jplLogo);
         jplLogo.setBounds(d.width / (100) * 77, d.height / (100) * 7, 349, 137);
-        jplLogo.setBackground(new Color(70,130,180));// 39, 41, 38
+        jplLogo.setBackground(new Color(47,79,79));// 39, 41, 38
         jplLogo.setLayout(null);
         jplLogo.setVisible(true);
 
         paciente = new JPanel();
         painel.add(paciente);
         paciente.setBounds(d.width / (100) * 2, d.height / (100) * 6, d.width / (100) * 75, d.height / (100) * 24);
-        paciente.setBackground(new Color(70,130,180)); //0,49,
+        paciente.setBackground(new Color(47,79,79)); //0,49,
         paciente.setBorder(BorderFactory.createTitledBorder(null, "INFORMAÇÃO DE PESQUISA", TitledBorder.LEFT, TitledBorder.TOP, new Font("Arial", Font.BOLD, 12), new Color(255,255,255)));
         paciente.setLayout(null);
         paciente.setVisible(true);
@@ -437,7 +437,7 @@ public final class Index extends JFrame {
         info_paciente = new JPanel();
         painel.add(info_paciente);
         info_paciente.setBounds(d.width / (100) * 78, d.height / (100) * 40, d.width / (100) * 23, d.height / (100) * 24);
-        info_paciente.setBackground(new Color(70,130,180));
+        info_paciente.setBackground(new Color(47,79,79));
         info_paciente.setBorder(BorderFactory.createTitledBorder(null, "LOCALIZAÇÃO", TitledBorder.CENTER, TitledBorder.TOP, new Font("Arial", Font.BOLD, 12), new Color(255,255,255)));
         info_paciente.setLayout(null);
         info_paciente.setVisible(true);
@@ -450,7 +450,7 @@ public final class Index extends JFrame {
         rodape = new JPanel();
         painel.add(rodape);
         rodape.setBounds(0, d.height / (100) * 97, d.width, d.height / (100) * 3);
-        rodape.setBackground(new Color(70,130,180));//141, 186, 47
+        rodape.setBackground(new Color(47,79,79));//141, 186, 47
         rodape.setLayout(null);
         rodape.setVisible(true);
 
@@ -609,7 +609,7 @@ public final class Index extends JFrame {
                         impressao.VerCaminhoCodigo(codigo,dataexame);
                         try {
                             impressao.Imprimir();
-                            VerCodigo(codigo);
+                            VerCodigo(codigo,dataexame);
                             btnAcessar.doClick();
                         } catch (PrinterException ex) {
                             Logger.getLogger(Index.class.getName()).log(Level.SEVERE, null, ex);
