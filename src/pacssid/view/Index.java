@@ -454,7 +454,7 @@ public final class Index extends JFrame {
         rodape.setLayout(null);
         rodape.setVisible(true);
 
-        jlbCopy = new JLabel("© 2018, design e deselvolvimento por Roberto Carvalho da Agion Tecnologia.");
+        jlbCopy = new JLabel("© 2019, design e deselvolvimento por Roberto Carvalho da Agion Tecnologia.");
         rodape.add(jlbCopy);
         jlbCopy.setBounds(d.width / (100) * 40, -2, d.width / (100) * 36, 22);
         jlbCopy.setFont(new Font("Arial", Font.BOLD, 11));
@@ -835,7 +835,7 @@ public final class Index extends JFrame {
         });
         Cor();
         TrocarFundo();
-        exec();
+      //  exec();
     }
 
     public void exec() {
