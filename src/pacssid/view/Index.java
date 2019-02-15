@@ -105,9 +105,9 @@ public final class Index extends JFrame {
         FileWriter arq;
         try {
             arq = new FileWriter("src/local/config.txt");
-            PrintWriter gravarArq = new PrintWriter(arq);           
-            gravarArq.printf(valorConvert);
-            gravarArq.close();
+            try (PrintWriter gravarArq = new PrintWriter(arq)) {
+                gravarArq.printf(valorConvert);
+            }
         } catch (IOException ex) {
             Logger.getLogger(Index.class.getName()).log(Level.SEVERE, null, ex);
         }
